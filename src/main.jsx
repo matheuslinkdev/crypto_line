@@ -1,8 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
+import "react-alice-carousel/lib/alice-carousel.css";
 
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import CryptoContext from "./CryptoContext.jsx";
 
 const colors = {
   commons: {
@@ -10,7 +12,7 @@ const colors = {
       50: "#00000000",
       300: "#65656550",
       600: "#50505075",
-      900: "#00000055"
+      900: "#00000055",
     },
     50: "#f6f6f6",
     100: "#e7e7e7",
@@ -23,7 +25,7 @@ const colors = {
     800: "#454545",
     900: "#303030",
     950: "#252525",
-    975: "#101010"
+    975: "#101010",
   },
   blue: {
     50: "#e9fffe",
@@ -59,7 +61,9 @@ const rootElement = document.getElementById("root");
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <App />
+      <CryptoContext>
+        <App />
+      </CryptoContext>
     </ChakraProvider>
   </React.StrictMode>
 );

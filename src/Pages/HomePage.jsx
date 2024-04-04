@@ -1,7 +1,14 @@
-const Home = () => {
-  return (
-    <div>Home</div>
-  )
-}
+import { useTheme } from "@chakra-ui/react";
+import Banner from "../Components/Banner/Banner";
 
-export default Home
+const Home = () => {
+  const theme = useTheme();
+
+  return (
+    <>
+      <Banner />
+    </>
+  );
+};
+
+export default Home;

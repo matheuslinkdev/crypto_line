@@ -1,10 +1,12 @@
 import { Flex, Heading, Select, useTheme } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
+import { CryptoState } from "../CryptoContext";
 
 const Header = ({ navigation }) => {
   const navigate = useNavigate();
-
   const theme = useTheme();
+
+  const { currency, setCurrency} = CryptoState()
 
   return (
     <header
@@ -33,8 +35,10 @@ const Header = ({ navigation }) => {
             CryptoLine
           </Heading>
         </Link>
+
         <Select
-          defaultValue={"USD"}
+        value={currency}
+        onChange={(e)=> setCurrency(e.target.value)}
           width="100px"
           height="40px"
           marginLeft="15px"
