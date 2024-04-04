@@ -27,7 +27,7 @@ const Banner = () => {
             CryptoLine
           </Heading>
           <Text size="xl" fontFamily="Raleway">
-            Get infos about the Crypto Currency
+            Trending Coins:
           </Text>
         </section>
         <Carousel/>
