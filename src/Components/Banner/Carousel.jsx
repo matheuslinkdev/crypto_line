@@ -2,7 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import AliceCarousel from "react-alice-carousel";
 import { Link } from "react-router-dom";
-import { Heading, Text, useTheme } from "@chakra-ui/react";
+import { Heading, Icon, Text, useTheme } from "@chakra-ui/react";
+import { AiOutlineRise, AiOutlineFall } from "react-icons/ai";
 
 const TrendingCoinsURL =
   "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd";
@@ -10,8 +11,7 @@ const TrendingCoinsURL =
 const Carousel = () => {
   const [trending, setTrending] = useState([]);
   const [loading, setLoading] = useState(true);
-
-   const theme = useTheme();
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchTrendingCoins = async () => {
@@ -44,8 +44,13 @@ const Carousel = () => {
     return <div>Carregando...</div>;
   }
 
-  const items = trending.slice(0, 10).map((coin, index) => {
+  const items = trending.slice(0, 15).map((coin, index) => {
     const profit = coin.price_change_percentage_24h >= 0;
+    // Use regex para formatar as casas decimais
+    const formattedPrice = coin.current_price
+      .toFixed(2)
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
     return (
       <Link
         to={`/coins/${coin.id}`}
@@ -66,15 +71,19 @@ const Carousel = () => {
         <Heading size="md" fontFamily="Raleway" fontWeight={300}>
           {coin.name}
         </Heading>
-        <Text size="md" fontFamily="Raleway">
-          {`USD ${coin.current_price}`}
+        <Text size="md" fontFamily="Montserrat" mb={5} mt={2} fontSize="18px">
+          {`$ ${formattedPrice}`}
         </Text>
         <span
           style={{
             color: profit ? theme.colors.green[600] : theme.colors.red[600],
+            fontWeight: "600",
+            fontSize: "18px",
+            fontFamily: "Montserrat",
           }}
         >
-          {profit && "+"} {coin.price_change_percentage_24h.toFixed(2)}%
+          {profit && "+"}
+          {coin.price_change_percentage_24h.toFixed(2)}%
         </span>
       </Link>
     );
@@ -97,8 +106,7 @@ const Carousel = () => {
       <AliceCarousel
         mouseTracking
         infinite
-        autoPlayInterval={1000}
-        animationDuration={2000}
+        animationDuration={5000}
         disableDotsControls
         disableButtonsControls
         responsive={responsive}
