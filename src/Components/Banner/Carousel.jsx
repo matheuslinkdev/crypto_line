@@ -4,6 +4,7 @@ import AliceCarousel from "react-alice-carousel";
 import { Link } from "react-router-dom";
 import { Heading, Icon, Text, useTheme } from "@chakra-ui/react";
 import { AiOutlineRise, AiOutlineFall } from "react-icons/ai";
+import { ArrowUpIcon } from "@chakra-ui/icons";
 
 const TrendingCoinsURL =
   "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd";
@@ -46,10 +47,11 @@ const Carousel = () => {
 
   const items = trending.slice(0, 15).map((coin, index) => {
     const profit = coin.price_change_percentage_24h >= 0;
-    // Use regex para formatar as casas decimais
-    const formattedPrice = coin.current_price
-      .toFixed(2)
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    // regex para formatar as casas decimais
+    const formattedPrice = coin.current_price.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
 
     return (
       <Link
@@ -72,7 +74,7 @@ const Carousel = () => {
           {coin.name}
         </Heading>
         <Text size="md" fontFamily="Montserrat" mb={5} mt={2} fontSize="18px">
-          {`$ ${formattedPrice}`}
+          {`${formattedPrice}`}
         </Text>
         <span
           style={{
