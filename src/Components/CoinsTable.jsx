@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { CoinList } from "../config/api";
 import { CryptoState } from "../CryptoContext";
@@ -17,7 +17,7 @@ import {
   Image,
   useTheme,
 } from "@chakra-ui/react";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import LinearLoader from "./Loader/LinearLoader";
 import { useNavigate } from "react-router-dom";
 
@@ -25,10 +25,11 @@ const CoinsTable = () => {
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(20); // Itens por página
   const theme = useTheme();
 
   const { currency } = CryptoState();
-  const navigate = useNavigate();
 
   const fetchCoins = async () => {
     setLoading(true);
@@ -54,19 +55,17 @@ const CoinsTable = () => {
     fetchData();
   }, [currency]);
 
-  const handleSearch = () => {
-    return coins.filter(
-      (coin) =>
-        coin.name.toLowerCase().includes(search) ||
-        coin.symbol.toLowerCase().includes(search)
-    );
-  };
+  const filteredCoins = coins.filter(
+    (coin) =>
+      coin.name.toLowerCase().includes(search) ||
+      coin.symbol.toLowerCase().includes(search)
+  );
 
-  const navigateToCoinDetail = (coinId) => {
-    navigate(`/coins/${coinId}`);
-  };
-
-  console.log(coins);
+  const totalPage = Math.ceil(filteredCoins.length / perPage);
+  const paginatedCoins = filteredCoins.slice(
+    (page - 1) * perPage,
+    page * perPage
+  );
 
   return (
     <>
@@ -123,7 +122,7 @@ const CoinsTable = () => {
                 </Tr>
               </Thead>
               <Tbody width="90dvw">
-                {handleSearch().map((row, index) => {
+                {paginatedCoins.map((row, index) => {
                   const profit = row.price_change_percentage_24h > 0;
 
                   return (
@@ -133,7 +132,6 @@ const CoinsTable = () => {
                       justifyContent="space-between"
                       width="90dvw"
                       mt={2}
-                      onClick={() => navigateToCoinDetail(row.id)}
                       style={{ cursor: "pointer" }}
                       key={index}
                       height="100px"
@@ -160,10 +158,10 @@ const CoinsTable = () => {
                         </div>
                       </Td>
                       <Td borderBottom="none">
-                        <span style={{position: "absolute", left: "31%", top: "50%", bottom: "50%"}}>
+                        <span style={{ position: "absolute", left: "31%" }}>
                           {row.current_price.toLocaleString("en-US", {
                             style: "currency",
-                            currency: "USD",
+                            currency: currency,
                           })}
                         </span>
                       </Td>
@@ -185,7 +183,7 @@ const CoinsTable = () => {
                         <span>
                           {row.market_cap.toLocaleString("en-US", {
                             style: "currency",
-                            currency: "USD",
+                            currency: currency,
                           })}
                         </span>
                       </Td>
@@ -195,6 +193,36 @@ const CoinsTable = () => {
               </Tbody>
             </Table>
           )}
+          <Flex justifyContent="space-between" mt="4">
+            <Flex>
+              <button onClick={() => setPage(1)} disabled={page === 1}>
+                First
+              </button>
+              <button
+                onClick={() => setPage((prevPage) => prevPage - 1)}
+                disabled={page === 1}
+              >
+                <FaChevronLeft />
+              </button>
+            </Flex>
+            <Text>
+              Page {page} of {totalPage}
+            </Text>
+            <Flex>
+              <button
+                onClick={() => setPage((prevPage) => prevPage + 1)}
+                disabled={page === totalPage}
+              >
+                <FaChevronRight />
+              </button>
+              <button
+                onClick={() => setPage(totalPage)}
+                disabled={page === totalPage}
+              >
+                Last
+              </button>
+            </Flex>
+          </Flex>
         </TableContainer>
       </Flex>
     </>

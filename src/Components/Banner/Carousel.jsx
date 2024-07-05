@@ -1,61 +1,39 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import AliceCarousel from "react-alice-carousel";
-import { Link } from "react-router-dom";
-import { Heading, Icon, Text, useTheme } from "@chakra-ui/react";
-import { AiOutlineRise, AiOutlineFall } from "react-icons/ai";
-import { ArrowUpIcon } from "@chakra-ui/icons";
-
-const TrendingCoinsURL =
-  "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd";
+import { Heading, Text, useTheme } from "@chakra-ui/react";
+import { CryptoState } from "../../CryptoContext";
+import { TrendingCoins } from "../../config/api";
 
 const Carousel = () => {
   const [trending, setTrending] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { currency, symbol } = CryptoState();
   const theme = useTheme();
 
-  useEffect(() => {
-    const fetchTrendingCoins = async () => {
-      try {
-        const { data } = await axios.get(TrendingCoinsURL);
-        if (data && Array.isArray(data)) {
-          setTrending(data);
-        } else {
-          console.error(
-            "Os dados retornados da API não estão no formato esperado:",
-            data
-          );
-          setTrending([]);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar moedas em tendência:", error);
-        setTrending([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+   const fetchTrendingCoins = async () => {
+     const { data } = await axios.get(TrendingCoins(currency));
 
-    fetchTrendingCoins();
-    const interval = setInterval(fetchTrendingCoins, 60000);
+     console.log(data);
+     setTrending(data);
+   };
 
-    return () => clearInterval(interval);
-  }, []);
+    useEffect(() => {
+      fetchTrendingCoins();
+    }, [currency]);
 
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
 
   const items = trending.slice(0, 15).map((coin, index) => {
     const profit = coin.price_change_percentage_24h >= 0;
-    // regex para formatar as casas decimais
+  
     const formattedPrice = coin.current_price.toLocaleString("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: currency,
     });
 
     return (
-      <Link
-        to={`/coins/${coin.id}`}
+      <li
+        
         key={index}
         style={{
           margin: "0 2vw",
@@ -87,7 +65,7 @@ const Carousel = () => {
           {profit && "+"}
           {coin.price_change_percentage_24h.toFixed(2)}%
         </span>
-      </Link>
+      </li>
     );
   });
 
